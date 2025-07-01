@@ -1,75 +1,81 @@
 import tkinter as tk
 from tkinter import messagebox
-import math
 
 
-class CalculosNumericos:
-    @staticmethod
-    def logaritmo_neperiano(valor: float) -> float:
-        if valor <= 0:
-            raise ValueError("El valor debe ser positivo para calcular el logaritmo.")
-        return math.log(valor)
+class Vendedor:
+    def __init__(self, nombre: str, apellidos: str, edad: int):
+        self.nombre = nombre
+        self.apellidos = apellidos
+        self.edad = edad
 
 
-    @staticmethod
-    def raiz_cuadrada(valor: float) -> float:
-        if valor < 0:
-            raise ValueError("El valor debe ser positivo para calcular la raíz cuadrada.")
-        return math.sqrt(valor)
+    def imprimir(self):
+        return f"Nombre: {self.nombre}\nApellidos: {self.apellidos}\nEdad: {self.edad}"
 
 
-class AppCalculos:
+    def verificar_edad(self):
+        if self.edad < 0 or self.edad > 120:
+            raise ValueError("La edad no puede ser negativa ni mayor a 120.")
+        if self.edad < 18:
+            raise ValueError("El vendedor debe ser mayor de 18 años.")
+
+
+class AppVendedor:
     def __init__(self, root):
         self.root = root
-        self.root.title("Cálculos Numéricos")
-        self.root.geometry("400x250")
+        self.root.title("Registro de Vendedor")
+        self.root.geometry("400x300")
 
 
-        # Etiqueta
-        tk.Label(root, text="Ingrese un número:").pack(pady=10)
-        self.entry_valor = tk.Entry(root)
-        self.entry_valor.pack()
+        # Etiquetas 
+        tk.Label(root, text="Nombre:").pack(pady=5)
+        self.entry_nombre = tk.Entry(root)
+        self.entry_nombre.pack()
 
 
-        # Botones
-        tk.Button(root, text="Calcular logaritmo neperiano", command=self.calcular_log).pack(pady=5)
-        tk.Button(root, text="Calcular raíz cuadrada", command=self.calcular_raiz).pack(pady=5)
+        tk.Label(root, text="Apellidos:").pack(pady=5)
+        self.entry_apellidos = tk.Entry(root)
+        self.entry_apellidos.pack()
+
+
+        tk.Label(root, text="Edad:").pack(pady=5)
+        self.entry_edad = tk.Entry(root)
+        self.entry_edad.pack()
+
+
+        # Botón de registro
+        tk.Button(root, text="Registrar Vendedor", command=self.registrar_vendedor).pack(pady=15)
 
 
         # Resultado
-        self.lbl_resultado = tk.Label(root, text="", font=("Courier", 10))
-        self.lbl_resultado.pack(pady=10)
+        self.resultado = tk.Label(root, text="", justify="left", font=("Courier", 10))
+        self.resultado.pack(pady=10)
 
 
-    def obtener_valor(self):
-        valor_texto = self.entry_valor.get().strip()
-        if not valor_texto:
-            raise ValueError("Debe ingresar un valor.")
+    def registrar_vendedor(self):
+        nombre = self.entry_nombre.get().strip()
+        apellidos = self.entry_apellidos.get().strip()
+        edad_texto = self.entry_edad.get().strip()
+
+
+        # Validar campos
+        if not nombre or not apellidos or not edad_texto:
+            messagebox.showerror("Error", "Todos los campos son obligatorios.")
+            return
+
+
         try:
-            return float(valor_texto)
-        except ValueError:
-            raise ValueError("Ingrese un número válido.")
-
-
-    def calcular_log(self):
-        try:
-            valor = self.obtener_valor()
-            resultado = CalculosNumericos.logaritmo_neperiano(valor)
-            self.lbl_resultado.config(text=f"ln({valor}) = {resultado:.5f}")
-        except ValueError as e:
-            messagebox.showerror("Error", str(e))
-
-
-    def calcular_raiz(self):
-        try:
-            valor = self.obtener_valor()
-            resultado = CalculosNumericos.raiz_cuadrada(valor)
-            self.lbl_resultado.config(text=f"√{valor} = {resultado:.5f}")
-        except ValueError as e:
-            messagebox.showerror("Error", str(e))
+            edad = int(edad_texto)
+            vendedor = Vendedor(nombre, apellidos, edad)
+            vendedor.verificar_edad()
+            self.resultado.config(text=vendedor.imprimir())
+        except ValueError as ve:
+            messagebox.showerror("Error", str(ve))
+        except Exception as e:
+            messagebox.showerror("Error inesperado", str(e))
 
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = AppCalculos(root)
+    app = AppVendedor(root)
     root.mainloop()
